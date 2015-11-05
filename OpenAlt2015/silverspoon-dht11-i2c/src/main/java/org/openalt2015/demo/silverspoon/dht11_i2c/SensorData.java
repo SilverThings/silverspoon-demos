@@ -8,6 +8,8 @@ public class SensorData {
 
    private int humidity = -1;
 
+   private String timestamp = "-1";
+
    // Bean methods
 
    public String getSensorName() {
@@ -32,6 +34,14 @@ public class SensorData {
 
    public void setHumidity(int humidity) {
       this.humidity = humidity;
+   }
+
+   public String getTimestamp() {
+      return this.timestamp;
+   }
+
+   public void setTimestamp(String timestamp) {
+      this.timestamp = timestamp;
    }
 
    // Fluent API
@@ -63,4 +73,12 @@ public class SensorData {
       return getHumidity();
    }
 
+   public SensorData timestamp(String timestamp){
+      setTimestamp(timestamp);
+      return this;
+   }
+
+   public String timestamp(){
+      return getTimestamp();
+   }
 }
