@@ -7,7 +7,7 @@
   <bean id="dht11" class="org.openalt2015.demo.silverspoon.dht11_i2c.Dht11I2c"/>
   <camelContext xmlns="http://camel.apache.org/schema/spring">
     <route>
-      <from uri="jetty:http://0.0.0.0:8080/sensorData"/>
+      <from uri="jetty:http://0.0.0.0:8282/sensorData"/>
       <to uri="bean:dht11?method=getSensorData"/>
       <marshal>
          <json library="Jackson" prettyPrint="true"/>

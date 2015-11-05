@@ -27,7 +27,6 @@ public class Dht11I2c {
 
    private Board board;
    private I2cBus i2c;
-   private byte[] buffer;
    private String sensorName;
 
    public Dht11I2c() {
@@ -35,14 +34,14 @@ public class Dht11I2c {
       List<I2cBus> l = board.getI2cBuses();
       i2c = board.getI2cBuses().get(0);
       sensorName = "DHT11-I2C:" + i2c.getName();
-      buffer = new byte[2];
       if(log.isInfoEnabled()){
          log.info("Initialized " + Dht11I2c.class.getName() + " bean for sensor '" + sensorName + "'.");
       }
    }
 
-   private void readValues() {
+   private byte[] readValues() {
       final I2cConnection connection = i2c.createI2cConnection(ADDRESS);
+      final byte[] buffer = new byte[2];
       try {
          connection.readBytes(buffer);
          if(log.isDebugEnabled()){
@@ -54,10 +53,11 @@ public class Dht11I2c {
             ioe.printStackTrace();
          }
       }
+      return buffer;
    }
 
    public SensorData getSensorData() {
-      readValues();
+      final byte[] buffer = readValues();
       return new SensorData()
                   .temperature(buffer[0])
                   .humidity(buffer[1])
