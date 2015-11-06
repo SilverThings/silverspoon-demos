@@ -10,6 +10,7 @@ import io.silverspoon.bulldog.core.io.bus.i2c.I2cConnection;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -21,6 +22,7 @@ import org.apache.log4j.Priority;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class Dht11I2c {
+   private static final Object lock = new Object();
    private static Logger log = Logger.getLogger(Dht11I2c.class);
    private static int ADDRESS = 0x42;
    private static SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -39,24 +41,47 @@ public class Dht11I2c {
       }
    }
 
-   private byte[] readValues() {
-      final I2cConnection connection = i2c.createI2cConnection(ADDRESS);
+   private byte[] readValues() throws SensorException {
       final byte[] buffer = new byte[2];
-      try {
-         connection.readBytes(buffer);
-         if(log.isDebugEnabled()){
-            log.debug("Temperature " + ((int) buffer[0]) + " °C, Humidity " + ((int) buffer[1]) + "%");
-         }
-      } catch (IOException ioe){
-         if(log.isEnabledFor(Priority.WARN)){
-            log.warn("Unable to read sensor values!");
+      boolean invalidData = false;
+      synchronized(lock){
+         final I2cConnection connection = i2c.createI2cConnection(ADDRESS);
+         try {
+            connection.readBytes(buffer);
+            if(buffer[0] == 0 || buffer[1] == 0){
+               invalidData = true;
+            }
+            if(log.isDebugEnabled()){
+               log.debug("Temperature " + ((int) buffer[0]) + " °C, Humidity " + ((int) buffer[1]) + "%");
+            }
+         } catch (IOException ioe){
             ioe.printStackTrace();
+            invalidData = true;
+         }
+         if(invalidData){
+            throw new SensorException("Unable to read sensor values!");
          }
       }
       return buffer;
    }
 
-   public SensorData getSensorData() {
+   public List<String> getTemperature() throws SensorException {
+      final List<String> list = new ArrayList<>();
+      SensorData sd = getSensorData();
+      list.add(sd.sensorName());
+      list.add(String.valueOf(sd.temperature()));
+      return list;
+   }
+
+   public List<String> getHumidity() throws SensorException {
+      final List<String> list = new ArrayList<>();
+      SensorData sd = getSensorData();
+      list.add(sd.sensorName());
+      list.add(String.valueOf(sd.humidity()));
+      return list;
+   }
+
+   public SensorData getSensorData() throws SensorException {
       final byte[] buffer = readValues();
       return new SensorData()
                   .temperature(buffer[0])
