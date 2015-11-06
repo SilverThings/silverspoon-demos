@@ -4,7 +4,10 @@
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
-  <bean id="dht11" class="org.openalt2015.demo.silverspoon.dht11_i2c.Dht11I2c"/>
+  <bean id="dht11" class="org.openalt2015.demo.silverspoon.dht11_i2c.Dht11I2c" init-method="init">
+    <property name="sensorName" value="${sensor.name}"/>
+    <property name="sensorAddress" value="${sensor.hwaddress}"/>
+  </bean>
   <camelContext xmlns="http://camel.apache.org/schema/spring">
 
     <onException>

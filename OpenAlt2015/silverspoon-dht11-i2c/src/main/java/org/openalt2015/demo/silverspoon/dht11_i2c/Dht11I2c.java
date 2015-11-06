@@ -24,20 +24,19 @@ import org.apache.log4j.Priority;
 public class Dht11I2c {
    private static final Object lock = new Object();
    private static Logger log = Logger.getLogger(Dht11I2c.class);
-   private static int ADDRESS = 0x42;
    private static SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
    private Board board;
    private I2cBus i2c;
-   private String sensorName;
+   private String sensorName = "DHT11-I2C";
+   private int sensorAddress = 0x42;
 
-   public Dht11I2c() {
+   public void init() {
       board = Platform.createBoard();
       List<I2cBus> l = board.getI2cBuses();
       i2c = board.getI2cBuses().get(0);
-      sensorName = "DHT11-I2C:" + i2c.getName();
       if(log.isInfoEnabled()){
-         log.info("Initialized " + Dht11I2c.class.getName() + " bean for sensor '" + sensorName + "'.");
+         log.info("Initialized " + Dht11I2c.class.getSimpleName() + " bean for a sensor on I2C bus '" + i2c.getName() + "' at address '0x" + Integer.toHexString(sensorAddress) + "'.");
       }
    }
 
@@ -45,7 +44,7 @@ public class Dht11I2c {
       final byte[] buffer = new byte[2];
       boolean invalidData = false;
       synchronized(lock){
-         final I2cConnection connection = i2c.createI2cConnection(ADDRESS);
+         final I2cConnection connection = i2c.createI2cConnection(sensorAddress);
          try {
             connection.readBytes(buffer);
             if(buffer[0] == 0 || buffer[1] == 0){
@@ -86,7 +85,23 @@ public class Dht11I2c {
       return new SensorData()
                   .temperature(buffer[0])
                   .humidity(buffer[1])
-                  .sensorName(sensorName)
+                  .sensorName(this.sensorName)
                   .timestamp(timestampFormat.format(new Date()));
+   }
+
+   public String getSensorName() {
+      return this.sensorName;
+   }
+
+   public void setSensorName(String sensorName) {
+      this.sensorName = sensorName;
+   }
+
+   public int getSensorAddress() {
+      return this.sensorAddress;
+   }
+
+   public void setSensorAddress(int sensorAddress) {
+      this.sensorAddress = sensorAddress;
    }
 }
