@@ -46,39 +46,39 @@ public class SensorData {
 
    // Fluent API
 
-   public SensorData sensorName(String sensorName){
+   public SensorData sensorName(String sensorName) {
       setSensorName(sensorName);
       return this;
    }
 
-   public String sensorName(){
+   public String sensorName() {
       return getSensorName();
    }
 
-   public SensorData temperature(int temperature){
+   public SensorData temperature(int temperature) {
       setTemperature(temperature);
       return this;
    }
 
-   public int temperature(){
+   public int temperature() {
       return getTemperature();
    }
 
-   public SensorData humidity(int humidity){
+   public SensorData humidity(int humidity) {
       setHumidity(humidity);
       return this;
    }
 
-   public int humidity(){
+   public int humidity() {
       return getHumidity();
    }
 
-   public SensorData timestamp(String timestamp){
+   public SensorData timestamp(String timestamp) {
       setTimestamp(timestamp);
       return this;
    }
 
-   public String timestamp(){
+   public String timestamp() {
       return getTimestamp();
    }
 }

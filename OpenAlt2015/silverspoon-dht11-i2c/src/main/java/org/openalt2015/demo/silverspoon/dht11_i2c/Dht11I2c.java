@@ -1,20 +1,17 @@
 package org.openalt2015.demo.silverspoon.dht11_i2c;
 
-import io.silverspoon.bulldog.core.platform.Board;
-import io.silverspoon.bulldog.core.platform.Platform;
-import io.silverspoon.bulldog.core.util.BulldogUtil;
-
-import io.silverspoon.bulldog.core.io.bus.i2c.I2cBus;
-import io.silverspoon.bulldog.core.io.bus.i2c.I2cConnection;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
+import io.silverspoon.bulldog.core.io.bus.i2c.I2cBus;
+import io.silverspoon.bulldog.core.io.bus.i2c.I2cConnection;
+import io.silverspoon.bulldog.core.platform.Board;
+import io.silverspoon.bulldog.core.platform.Platform;
 
 /**
  * A Bean to read DHT11-I2C sensor data over I2C bus.
@@ -35,7 +32,7 @@ public class Dht11I2c {
       board = Platform.createBoard();
       List<I2cBus> l = board.getI2cBuses();
       i2c = board.getI2cBuses().get(0);
-      if(log.isInfoEnabled()){
+      if (log.isInfoEnabled()) {
          log.info("Initialized " + Dht11I2c.class.getSimpleName() + " bean for a sensor on I2C bus '" + i2c.getName() + "' at address '0x" + Integer.toHexString(sensorAddress) + "'.");
       }
    }
@@ -43,21 +40,21 @@ public class Dht11I2c {
    private byte[] readValues() throws SensorException {
       final byte[] buffer = new byte[2];
       boolean invalidData = false;
-      synchronized(lock){
+      synchronized (lock) {
          final I2cConnection connection = i2c.createI2cConnection(sensorAddress);
          try {
             connection.readBytes(buffer);
-            if(buffer[0] == 0 || buffer[1] == 0){
+            if (buffer[0] == 0 || buffer[1] == 0) {
                invalidData = true;
             }
-            if(log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                log.debug("Temperature " + ((int) buffer[0]) + " °C, Humidity " + ((int) buffer[1]) + "%");
             }
-         } catch (IOException ioe){
+         } catch (IOException ioe) {
             ioe.printStackTrace();
             invalidData = true;
          }
-         if(invalidData){
+         if (invalidData) {
             throw new SensorException("Unable to read sensor values!");
          }
       }
@@ -83,10 +80,10 @@ public class Dht11I2c {
    public SensorData getSensorData() throws SensorException {
       final byte[] buffer = readValues();
       return new SensorData()
-                  .temperature(buffer[0])
-                  .humidity(buffer[1])
-                  .sensorName(this.sensorName)
-                  .timestamp(timestampFormat.format(new Date()));
+            .temperature(buffer[0])
+            .humidity(buffer[1])
+            .sensorName(this.sensorName)
+            .timestamp(timestampFormat.format(new Date()));
    }
 
    public String getSensorName() {

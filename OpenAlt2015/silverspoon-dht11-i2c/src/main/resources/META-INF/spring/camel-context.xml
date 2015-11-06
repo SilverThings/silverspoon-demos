@@ -1,46 +1,46 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
-  <bean id="dht11" class="org.openalt2015.demo.silverspoon.dht11_i2c.Dht11I2c" init-method="init">
-    <property name="sensorName" value="${sensor.name}"/>
-    <property name="sensorAddress" value="${sensor.hwaddress}"/>
-  </bean>
-  <camelContext xmlns="http://camel.apache.org/schema/spring">
-
-    <onException>
-       <exception>org.openalt2015.demo.silverspoon.dht11_i2c.SensorException</exception>
-       <log message="Unable to read sensor data!"/>
-    </onException>
-
-    <route>
-      <from uri="timer:temperatureTimer?period=1000"/>
-      <to uri="bean:dht11?method=getTemperature"/>
-      <marshal>
-         <json library="Jackson" prettyPrint="true"/>
-      </marshal>
-      <setHeader headerName="Exchange.HTTP_METHOD"><simple>POST</simple></setHeader>
-      <to uri="http4://${server.host}:${server.port}/rest/RegisterTemperature/temperature?bridgeEndpoint=true"/>
-   </route>
-
-   <route>
-      <from uri="timer:humidityTimer?period=1000"/>
-      <to uri="bean:dht11?method=getHumidity"/>
-      <marshal>
-         <json library="Jackson" prettyPrint="true"/>
-      </marshal>
-      <setHeader headerName="Exchange.HTTP_METHOD"><simple>POST</simple></setHeader>
-      <to uri="http4://${server.host}:${server.port}/rest/RegisterTemperature/humidity?bridgeEndpoint=true"/>
-    </route>
-
-    <route>
-      <from uri="jetty:http://${sensor.host}:${sensor.port}/sensorData"/>
-      <to uri="bean:dht11?method=getSensorData"/>
-      <marshal>
-         <json library="Jackson" prettyPrint="true"/>
-      </marshal>
-    </route>
-  </camelContext>
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+   <bean id="dht11" class="org.openalt2015.demo.silverspoon.dht11_i2c.Dht11I2c" init-method="init">
+      <property name="sensorName" value="${sensor.name}"/>
+      <property name="sensorAddress" value="${sensor.hwaddress}"/>
+   </bean>
+   <camelContext xmlns="http://camel.apache.org/schema/spring">
+      <onException>
+         <exception>org.openalt2015.demo.silverspoon.dht11_i2c.SensorException</exception>
+         <log message="Unable to read sensor data!"/>
+      </onException>
+      <route>
+         <from uri="timer:temperatureTimer?period=1000"/>
+         <to uri="bean:dht11?method=getTemperature"/>
+         <marshal>
+            <json library="Jackson" prettyPrint="true"/>
+         </marshal>
+         <setHeader headerName="Exchange.HTTP_METHOD">
+            <simple>POST</simple>
+         </setHeader>
+         <to uri="http4://${server.host}:${server.port}/rest/RegisterTemperature/temperature?bridgeEndpoint=true"/>
+      </route>
+      <route>
+         <from uri="timer:humidityTimer?period=1000"/>
+         <to uri="bean:dht11?method=getHumidity"/>
+         <marshal>
+            <json library="Jackson" prettyPrint="true"/>
+         </marshal>
+         <setHeader headerName="Exchange.HTTP_METHOD">
+            <simple>POST</simple>
+         </setHeader>
+         <to uri="http4://${server.host}:${server.port}/rest/RegisterTemperature/humidity?bridgeEndpoint=true"/>
+      </route>
+      <route>
+         <from uri="jetty:http://${sensor.host}:${sensor.port}/sensorData"/>
+         <to uri="bean:dht11?method=getSensorData"/>
+         <marshal>
+            <json library="Jackson" prettyPrint="true"/>
+         </marshal>
+      </route>
+   </camelContext>
 </beans>
