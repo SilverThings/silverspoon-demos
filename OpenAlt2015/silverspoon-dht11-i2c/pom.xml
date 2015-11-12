@@ -16,6 +16,7 @@
       <sensor.port>8282</sensor.port>
       <sensor.hwaddress>0x42</sensor.hwaddress>
       <sensor.name>DHT11-I2C</sensor.name>
+      <publish>false</publish>
    </properties>
    <dependencies>
       <dependency>

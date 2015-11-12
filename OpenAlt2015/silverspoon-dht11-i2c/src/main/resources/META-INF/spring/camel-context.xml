@@ -13,7 +13,7 @@
          <exception>org.openalt2015.demo.silverspoon.dht11_i2c.SensorException</exception>
          <log message="Unable to read sensor data!"/>
       </onException>
-      <route>
+      <route autoStartup="${publish}">
          <from uri="timer:temperatureTimer?period=1000"/>
          <to uri="bean:dht11?method=getTemperature"/>
          <marshal>
@@ -24,7 +24,7 @@
          </setHeader>
          <to uri="http4://${server.host}:${server.port}/rest/RegisterTemperature/temperature?bridgeEndpoint=true"/>
       </route>
-      <route>
+      <route autoStartup="${publish}">
          <from uri="timer:humidityTimer?period=1000"/>
          <to uri="bean:dht11?method=getHumidity"/>
          <marshal>
