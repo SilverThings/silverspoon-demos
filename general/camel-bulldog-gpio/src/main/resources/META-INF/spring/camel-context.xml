@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+   <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+      <property name="location" value="classpath:gpio.properties" />
+   </bean>
+
+   <camelContext trace="false" xmlns="http://camel.apache.org/schema/spring">
+      <restConfiguration bindingMode="auto" component="jetty" port="8281" />
+      <rest path="/gpio">
+         <get uri="/led/on">
+            <to uri="bulldog://gpio?pin={{gpio.pin}}&amp;value=HIGH" />
+         </get>
+         <get uri="/led/off">
+            <to uri="bulldog://gpio?pin={{gpio.pin}}&amp;value=LOW" />
+         </get>
+      </rest>
+   </camelContext>
+</beans>
