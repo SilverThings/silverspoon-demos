@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+   <camelContext xmlns="http://camel.apache.org/schema/spring">
+      <route>
+         <from uri="jetty:http://${sensor.host}:${sensor.port}/sensorData"/>
+         <transform>
+            <simple></simple>
+         </transform>
+         <to uri="bulldog:i2c?address=0x42&amp;readLength=2"/>
+         <setHeader headerName="Exchange.CONTENT_TYPE">
+            <constant>text/plain</constant>
+         </setHeader>
+      </route>
+   </camelContext>
+</beans>
