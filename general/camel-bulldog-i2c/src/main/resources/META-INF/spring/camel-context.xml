@@ -6,14 +6,31 @@
           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
    <camelContext xmlns="http://camel.apache.org/schema/spring">
       <route>
-         <from uri="jetty:http://${sensor.host}:${sensor.port}/sensorData"/>
-         <transform>
-            <simple></simple>
-         </transform>
-         <to uri="bulldog:i2c?address=0x42&amp;readLength=2"/>
-         <setHeader headerName="Exchange.CONTENT_TYPE">
-            <constant>text/plain</constant>
-         </setHeader>
+         <from uri="jetty:http://${sensor.host}:${sensor.port}/pca9685/reset"/>
+         <!-- PCA9685 init -->
+         <transform><simple>00a1</simple></transform><to uri="bulldog:i2c?address=0x40"/>
+         <transform><simple>0104</simple></transform><to uri="bulldog:i2c?address=0x40"/>
+         <transform><simple>fc0010</simple></transform><to uri="bulldog:i2c?address=0x40"/>
+      </route>
+      <route>
+         <from uri="jetty:http://${sensor.host}:${sensor.port}/pca9685/alloff"/>
+         <!-- turn all LEDs off -->
+         <transform><simple>fc0010</simple></transform><to uri="bulldog:i2c?address=0x40"/>
+      </route>
+      <route>
+         <from uri="jetty:http://${sensor.host}:${sensor.port}/pca9685/led1/on"/>
+         <!-- turn LED1 on (full brightness) -->
+         <transform><simple>0A0000ff0f</simple></transform><to uri="bulldog:i2c?address=0x40"/>
+      </route>
+      <route>
+         <from uri="jetty:http://${sensor.host}:${sensor.port}/pca9685/led1/off"/>
+         <!-- turn LED1 off -->
+         <transform><simple>0A00000000</simple></transform><to uri="bulldog:i2c?address=0x40"/>
+      </route>
+      <route>
+         <from uri="jetty:http://${sensor.host}:${sensor.port}/pca9685/led1/set"/>
+         <!-- set LED1's brightness -->
+         <transform><simple>0A0000${bodyAs(String)}</simple></transform><to uri="bulldog:i2c?address=0x40"/>
       </route>
    </camelContext>
 </beans>
