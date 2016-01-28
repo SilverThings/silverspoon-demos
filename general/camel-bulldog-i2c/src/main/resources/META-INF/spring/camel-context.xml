@@ -5,7 +5,7 @@
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
    <camelContext xmlns="http://camel.apache.org/schema/spring">
-      <restConfiguration bindingMode="off" component="jetty" host="${sensor.host}" port="${sensor.port}" />
+      <restConfiguration bindingMode="off" component="jetty" host="${rest.host}" port="${rest.port}" />
       <rest path="/pca9685">
          <get uri="/reset">
             <to uri="direct:reset"/>
@@ -31,33 +31,33 @@
       <route>
          <from uri="direct:reset"/>
          <!-- PCA9685 init -->
-         <transform><simple>00a1</simple></transform><to uri="bulldog:i2c?address=0x40"/>
-         <transform><simple>0104</simple></transform><to uri="bulldog:i2c?address=0x40"/>
-         <transform><simple>fc0010</simple></transform><to uri="bulldog:i2c?address=0x40"/>
+         <transform><simple>00a1</simple></transform><setHeader headerName="address"><simple>${pca9685.hwaddress}</simple></setHeader><to uri="bulldog:i2c"/>
+         <transform><simple>0104</simple></transform><setHeader headerName="address"><simple>${pca9685.hwaddress}</simple></setHeader><to uri="bulldog:i2c"/>
+         <transform><simple>fc0010</simple></transform><setHeader headerName="address"><simple>${pca9685.hwaddress}</simple></setHeader><to uri="bulldog:i2c"/>
       </route>
 
       <route>
          <from uri="direct:alloff"/>
          <!-- turn all LEDs off -->
-         <transform><simple>fc0010</simple></transform><to uri="bulldog:i2c?address=0x40"/>
+         <transform><simple>fc0010</simple></transform><setHeader headerName="address"><simple>${pca9685.hwaddress}</simple></setHeader><to uri="bulldog:i2c"/>
       </route>
 
       <route>
          <from uri="direct:led1on"/>
          <!-- turn LED1 on (full brightness) -->
-         <transform><simple>0A0000ff0f</simple></transform><to uri="bulldog:i2c?address=0x40"/>
+         <transform><simple>0A0000ff0f</simple></transform><setHeader headerName="address"><simple>${pca9685.hwaddress}</simple></setHeader><to uri="bulldog:i2c"/>
       </route>
 
       <route>
          <from uri="direct:led1off"/>
          <!-- turn LED1 off -->
-         <transform><simple>0A00000000</simple></transform><to uri="bulldog:i2c?address=0x40"/>
+         <transform><simple>0A00000000</simple></transform><setHeader headerName="address"><simple>${pca9685.hwaddress}</simple></setHeader><to uri="bulldog:i2c"/>
       </route>
 
       <route>
          <from uri="direct:led1set"/>
          <!-- set LED1's brightness -->
-         <transform><simple>0A0000${bodyAs(String)}</simple></transform><to uri="bulldog:i2c?address=0x40"/>
+         <transform><simple>0A0000${bodyAs(String)}</simple><setHeader headerName="address"><simple>${pca9685.hwaddress}</simple></setHeader></transform><to uri="bulldog:i2c"/>
       </route>
    </camelContext>
 </beans>
