@@ -9,9 +9,9 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-      <sensor.host>0.0.0.0</sensor.host>
-      <sensor.port>8282</sensor.port>
-      <sensor.hwaddress>0x42</sensor.hwaddress>
+      <rest.host>0.0.0.0</rest.host>
+      <rest.port>8282</rest.port>
+      <pca9685.hwaddress>0x40</pca9685.hwaddress>
       <version.camel>2.16.1</version.camel>
       <publish>false</publish>
    </properties>
