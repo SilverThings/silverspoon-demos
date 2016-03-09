@@ -13,8 +13,8 @@
       <server.host>localhost</server.host>
       <server.port>8081</server.port>
       <sensor.host>0.0.0.0</sensor.host>
-      <sensor.port>8282</sensor.port>
-      <sensor.hwaddress>0x42</sensor.hwaddress>
+      <sensor.port>8283</sensor.port>
+      <sensor.hwaddress>0x43</sensor.hwaddress>
       <sensor.name>DHT11-I2C</sensor.name>
       <publish>false</publish>
    </properties>
