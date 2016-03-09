@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+   <bean id="sensorDataProcessor" class="io.silverspoon.demos.dht11_i2c.SensorDataProcessor"/>
+   <bean id="temperatureProcessor" class="io.silverspoon.demos.dht11_i2c.TemperatureProcessor"/>
+   <bean id="humidityProcessor" class="io.silverspoon.demos.dht11_i2c.HumidityProcessor"/>
+   <camelContext xmlns="http://camel.apache.org/schema/spring">
+      <onException>
+         <exception>io.silverspoon.demos.dht11_i2c.SensorException</exception>
+         <log message="Unable to read sensor data!"/>
+      </onException>
+      <route autoStartup="${publish}">
+         <from uri="timer:temperatureTimer?period=1000"/>
+         <setHeader headerName="address"><constant>${sensor.hwaddress}</constant></setHeader>
+         <setBody><constant></constant></setBody>
+         <to uri="bulldog:i2c?readLength=2"/>
+         <bean ref="sensorDataProcessor"/>
+         <bean ref="temperatureProcessor"/>
+         <marshal>
+            <json library="Jackson" prettyPrint="true"/>
+         </marshal>
+         <setHeader headerName="Exchange.HTTP_METHOD">
+            <simple>POST</simple>
+         </setHeader>
+         <to uri="http4://${server.host}:${server.port}/rest/RegisterTemperature/temperature?bridgeEndpoint=true"/>
+      </route>
+      <route autoStartup="${publish}">
+         <from uri="timer:humidityTimer?period=1000"/>
+         <setHeader headerName="address"><constant>${sensor.hwaddress}</constant></setHeader>
+         <setBody><constant></constant></setBody>
+         <to uri="bulldog:i2c?readLength=2"/>
+         <bean ref="sensorDataProcessor"/>
+         <bean ref="humidityProcessor"/>
+         <marshal>
+            <json library="Jackson" prettyPrint="true"/>
+         </marshal>
+         <setHeader headerName="Exchange.HTTP_METHOD">
+            <simple>POST</simple>
+         </setHeader>
+         <to uri="http4://${server.host}:${server.port}/rest/RegisterTemperature/humidity?bridgeEndpoint=true"/>
+      </route>
+      <route>
+         <from uri="jetty:http://${sensor.host}:${sensor.port}/sensorData"/>
+         <setHeader headerName="address"><constant>${sensor.hwaddress}</constant></setHeader>
+         <setBody><constant></constant></setBody>
+         <to uri="bulldog:i2c?readLength=2"/>
+         <bean ref="sensorDataProcessor"/>
+         <marshal>
+            <json library="Jackson" prettyPrint="true"/>
+         </marshal>
+      </route>
+   </camelContext>
+</beans>
