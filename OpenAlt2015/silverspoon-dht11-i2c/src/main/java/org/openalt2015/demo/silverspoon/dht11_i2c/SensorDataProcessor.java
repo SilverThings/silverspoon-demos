@@ -1,4 +1,4 @@
-package io.silverspoon.demos.dht11_i2c;
+package org.openalt2015.demo.silverspoon.dht11_i2c;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;

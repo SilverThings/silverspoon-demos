@@ -4,10 +4,9 @@
        xsi:schemaLocation="
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
-   <bean id="dht11" class="org.openalt2015.demo.silverspoon.dht11_i2c.Dht11I2c" init-method="init">
-      <property name="sensorName" value="${sensor.name}"/>
-      <property name="sensorAddress" value="${sensor.hwaddress}"/>
-   </bean>
+   <bean id="sensorDataProcessor" class="org.openalt2015.demo.silverspoon.dht11_i2c.SensorDataProcessor"/>
+   <bean id="temperatureProcessor" class="org.openalt2015.demo.silverspoon.dht11_i2c.TemperatureProcessor"/>
+   <bean id="humidityProcessor" class="org.openalt2015.demo.silverspoon.dht11_i2c.HumidityProcessor"/>
    <camelContext xmlns="http://camel.apache.org/schema/spring">
       <onException>
          <exception>org.openalt2015.demo.silverspoon.dht11_i2c.SensorException</exception>
@@ -15,7 +14,11 @@
       </onException>
       <route autoStartup="${publish}">
          <from uri="timer:temperatureTimer?period=1000"/>
-         <to uri="bean:dht11?method=getTemperature"/>
+         <setHeader headerName="address"><constant>${sensor.hwaddress}</constant></setHeader>
+         <setBody><constant></constant></setBody>
+         <to uri="bulldog:i2c?readLength=2"/>
+         <bean ref="sensorDataProcessor"/>
+         <bean ref="temperatureProcessor"/>
          <marshal>
             <json library="Jackson" prettyPrint="true"/>
          </marshal>
@@ -26,7 +29,11 @@
       </route>
       <route autoStartup="${publish}">
          <from uri="timer:humidityTimer?period=1000"/>
-         <to uri="bean:dht11?method=getHumidity"/>
+         <setHeader headerName="address"><constant>${sensor.hwaddress}</constant></setHeader>
+         <setBody><constant></constant></setBody>
+         <to uri="bulldog:i2c?readLength=2"/>
+         <bean ref="sensorDataProcessor"/>
+         <bean ref="humidityProcessor"/>
          <marshal>
             <json library="Jackson" prettyPrint="true"/>
          </marshal>
@@ -37,7 +44,10 @@
       </route>
       <route>
          <from uri="jetty:http://${sensor.host}:${sensor.port}/sensorData"/>
-         <to uri="bean:dht11?method=getSensorData"/>
+         <setHeader headerName="address"><constant>${sensor.hwaddress}</constant></setHeader>
+         <setBody><constant></constant></setBody>
+         <to uri="bulldog:i2c?readLength=2"/>
+         <bean ref="sensorDataProcessor"/>
          <marshal>
             <json library="Jackson" prettyPrint="true"/>
          </marshal>

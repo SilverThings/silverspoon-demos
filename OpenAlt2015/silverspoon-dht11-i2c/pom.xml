@@ -5,8 +5,8 @@
    <artifactId>silverspoon-dht11-i2c</artifactId>
    <packaging>jar</packaging>
    <version>1.0-SNAPSHOT</version>
-   <name>A Camel Spring Route</name>
-   <url>http://www.myorganization.org</url>
+   <name>DHT11 Temperature/Humidity sensor data over REST API.</name>
+   <url>http://www.silverspoon.io</url>
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -46,9 +46,8 @@
       </dependency>
       <dependency>
          <groupId>io.silverspoon</groupId>
-         <artifactId>bulldog-distro</artifactId>
+         <artifactId>camel-bulldog</artifactId>
          <version>0.2.1-SNAPSHOT</version>
-         <type>pom</type>
       </dependency>
       <!-- logging -->
       <dependency>

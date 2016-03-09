@@ -1,1 +1,0 @@
-DHT11 Temperature/Humidity sensor data over REST.
